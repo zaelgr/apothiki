@@ -2,99 +2,72 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <title>Online Inventory - Stable Version</title>
+    <title>Online Inventory</title>
     <style>
-        body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background: #f4f4f4; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; border-bottom: 2px solid #007bff; background: white; }
-        .logo img { height: 50px; }
-        .info { text-align: right; font-size: 0.85em; color: #555; }
+        body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 2px solid #ccc; background: white; }
+        .logo img { height: 60px; }
         .wrapper { display: flex; flex: 1; overflow: hidden; }
-        aside { width: 220px; border-right: 1px solid #ddd; padding: 15px; background: #fff; }
+        aside { width: 250px; border-right: 1px solid #ddd; padding: 15px; background: #f9f9f9; overflow-y: auto; }
         main { flex: 1; padding: 20px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th { background: #007bff; color: white; padding: 12px; border: 1px solid #ddd; text-align: left; }
-        td { padding: 10px; border: 1px solid #ddd; font-size: 0.9em; }
-        tr:nth-child(even) { background: #f9f9f9; }
-        .error-msg { color: red; padding: 20px; font-weight: bold; background: #ffdada; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #eee; padding: 10px; border: 1px solid #ddd; text-align: left; }
+        td { padding: 10px; border: 1px solid #ddd; }
+        .tree-item { cursor: pointer; padding: 5px; color: blue; text-decoration: underline; }
+        .tree-item:hover { color: darkblue; }
     </style>
 </head>
 <body>
-
 <header>
-    <div class="logo"><img src="logo.png" alt="LOGO" onerror="this.style.display='none'; this.after('MY LOGO')"></div>
-    <div class="info">
-        <strong>Η ΕΠΙΧΕΙΡΗΣΗ ΜΟΥ Α.Ε.</strong><br>
-        Διεύθυνση: Οδός Παραδείσου 10, Αθήνα<br>
-        Τηλ: 210 1234567 | info@mycompany.gr
-    </div>
+    <div class="logo"><strong>MY LOGO</strong></div>
+    <div class="info"><strong>Η ΕΠΙΧΕΙΡΗΣΗ ΜΟΥ</strong></div>
 </header>
-
 <div class="wrapper">
     <aside id="tree">
-        <h4 id="menuTitle">📁 ΚΑΤΗΓΟΡΙΕΣ</h4>
-        <div style="cursor:pointer; color: blue; text-decoration: underline;" onclick="loadData()">🔄 Ανανέωση Δεδομένων</div>
+        <h3>📁 Κατηγορίες</h3>
+        <div class="tree-item" onclick="renderTable(rawData)">👉 ΟΛΑ ΤΑ ΥΛΙΚΑ</div>
+        <hr>
+        <div id="categoryList"></div>
     </aside>
-    <main id="mainContent">
+    <main>
         <table id="inventoryTable">
-            <thead>
-                <tr id="headerRow">
-                    <th>Εξάρτημα</th>
-                    <th>Ποσότητα</th>
-                    <th>Τιμή (€)</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <tr><td colspan="3" style="text-align:center;">Φόρτωση δεδομένων...</td></tr>
-            </tbody>
+            <thead><tr id="hRow"><th>Εξάρτημα</th><th>Ποσότητα</th><th>Τιμή (€)</th></tr></thead>
+            <tbody id="bRow"></tbody>
         </table>
     </main>
 </div>
-
 <script>
+    let rawData = [];
     async function loadData() {
-        const tbody = document.getElementById('tableBody');
-        try {
-            // Διαβάζουμε το CSV αρχείο (προσθέτουμε timestamp για να μην παίρνει παλιά cache)
-            const response = await fetch('apothiki_site.csv?t=' + new Date().getTime());
-            
-            if (!response.ok) throw new Error('Δεν βρέθηκε το αρχείο apothiki_site.csv');
-            
-            const text = await response.text();
-            const rows = text.split('\n').slice(1); // Παραλείπουμε την πρώτη γραμμή (headers)
-            
-            tbody.innerHTML = ""; // Καθαρίζουμε τον πίνακα
-
-            let hasData = false;
-            rows.forEach(row => {
-                const cols = row.split(',');
-                if (cols.length >= 3 && cols[0].trim() !== "") {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="font-weight:bold;">${cols[0]}</td>
-                        <td style="text-align:center;">${cols[1]}</td>
-                        <td style="color:green; font-weight:bold;">${cols[4] || cols[2]} €</td>
-                    `;
-                    tbody.appendChild(tr);
-                    hasData = true;
-                }
-            });
-
-            if (!hasData) {
-                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Η αποθήκη είναι άδεια.</td></tr>";
-            }
-
-        } catch (error) {
-            document.getElementById('mainContent').innerHTML = `
-                <div class="error-msg">
-                    ❌ Σφάλμα: ${error.message}<br>
-                    <small>Βεβαιωθείτε ότι το αρχείο <b>apothiki_site.csv</b> βρίσκεται στον ίδιο φάκελο με το index.html.</small>
-                </div>`;
-        }
+        const response = await fetch('apothiki_site.csv?t=' + new Date().getTime());
+        const text = await response.text();
+        const rows = text.split('\n').slice(1);
+        rawData = rows.map(row => {
+            const cols = row.split(',');
+            return { name: cols[0], qty: cols[1], price: cols[2], cat: cols[3] || 'Γενικά' };
+        }).filter(r => r.name);
+        
+        // Φτιάξε το Tree
+        const categories = [...new Set(rawData.map(item => item.cat))];
+        const catDiv = document.getElementById('categoryList');
+        categories.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'tree-item';
+            div.innerText = "📁 " + c;
+            div.onclick = () => filterTable(c);
+            catDiv.appendChild(div);
+        });
+        renderTable(rawData);
     }
-
-    // Εκκίνηση φόρτωσης
+    function renderTable(data) {
+        const b = document.getElementById('bRow');
+        b.innerHTML = data.map(r => `<tr><td>${r.name}</td><td>${r.qty}</td><td>${r.price} €</td></tr>`).join('');
+    }
+    function filterTable(cat) {
+        const filtered = rawData.filter(item => item.cat === cat);
+        renderTable(filtered);
+    }
     loadData();
 </script>
-
 </body>
 </html>
