@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Online Inventory - Stable Version</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background: #f4f4f4; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; border-bottom: 2px solid #007bff; background: white; }
+        .logo img { height: 50px; }
+        .info { text-align: right; font-size: 0.85em; color: #555; }
+        .wrapper { display: flex; flex: 1; overflow: hidden; }
+        aside { width: 220px; border-right: 1px solid #ddd; padding: 15px; background: #fff; }
+        main { flex: 1; padding: 20px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #007bff; color: white; padding: 12px; border: 1px solid #ddd; text-align: left; }
+        td { padding: 10px; border: 1px solid #ddd; font-size: 0.9em; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .error-msg { color: red; padding: 20px; font-weight: bold; background: #ffdada; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><img src="logo.png" alt="LOGO" onerror="this.style.display='none'; this.after('MY LOGO')"></div>
+    <div class="info">
+        <strong>Η ΕΠΙΧΕΙΡΗΣΗ ΜΟΥ Α.Ε.</strong><br>
+        Διεύθυνση: Οδός Παραδείσου 10, Αθήνα<br>
+        Τηλ: 210 1234567 | info@mycompany.gr
+    </div>
+</header>
+
+<div class="wrapper">
+    <aside id="tree">
+        <h4 id="menuTitle">📁 ΚΑΤΗΓΟΡΙΕΣ</h4>
+        <div style="cursor:pointer; color: blue; text-decoration: underline;" onclick="loadData()">🔄 Ανανέωση Δεδομένων</div>
+    </aside>
+    <main id="mainContent">
+        <table id="inventoryTable">
+            <thead>
+                <tr id="headerRow">
+                    <th>Εξάρτημα</th>
+                    <th>Ποσότητα</th>
+                    <th>Τιμή (€)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="3" style="text-align:center;">Φόρτωση δεδομένων...</td></tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+<script>
+    async function loadData() {
+        const tbody = document.getElementById('tableBody');
+        try {
+            // Διαβάζουμε το CSV αρχείο (προσθέτουμε timestamp για να μην παίρνει παλιά cache)
+            const response = await fetch('apothiki_site.csv?t=' + new Date().getTime());
+            
+            if (!response.ok) throw new Error('Δεν βρέθηκε το αρχείο apothiki_site.csv');
+            
+            const text = await response.text();
+            const rows = text.split('\n').slice(1); // Παραλείπουμε την πρώτη γραμμή (headers)
+            
+            tbody.innerHTML = ""; // Καθαρίζουμε τον πίνακα
+
+            let hasData = false;
+            rows.forEach(row => {
+                const cols = row.split(',');
+                if (cols.length >= 3 && cols[0].trim() !== "") {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight:bold;">${cols[0]}</td>
+                        <td style="text-align:center;">${cols[1]}</td>
+                        <td style="color:green; font-weight:bold;">${cols[4] || cols[2]} €</td>
+                    `;
+                    tbody.appendChild(tr);
+                    hasData = true;
+                }
+            });
+
+            if (!hasData) {
+                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Η αποθήκη είναι άδεια.</td></tr>";
+            }
+
+        } catch (error) {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="error-msg">
+                    ❌ Σφάλμα: ${error.message}<br>
+                    <small>Βεβαιωθείτε ότι το αρχείο <b>apothiki_site.csv</b> βρίσκεται στον ίδιο φάκελο με το index.html.</small>
+                </div>`;
+        }
+    }
+
+    // Εκκίνηση φόρτωσης
+    loadData();
+</script>
+
+</body>
+</html>
