@@ -1,7 +1,9 @@
-Name,Qty,Desc,Loc,Price,Image
-BC548,12,PNP 45V 400mA,A2,0.0,
-BC547,5,NPN 45V 350mA,A1,1.09,
-BU806,0,,,0.0,BU806.jpg
-2N3055,5,60V 2A,B6,2.48,
-2N2222,13,50V 400mA,A14,1.49,
-ECC83,2,Προενισχυτης,A1,3.72,ECC83.jpg
+﻿Image,ID,SKU,Name,Qty,Price,Category
+Unijunction_transistors.jpg,1,1BC546A1,BC546,11,3.10,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BC
+ecc83s-12.jpg,2,2ECC83A2,ECC83,11,24.80,ΗΛΕΚΤΡΟΝΙΚΑ > ΛΥΧΝΙΕΣ
+PL504.jpg,3,3PL504A3,PL504,11,24.18,ΗΛΕΚΤΡΟΝΙΚΑ > ΛΥΧΝΙΕΣ
+BD141.jpg,4,4BD141A4,BD141,11,4.34,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BD
+BU208.jpg,5,5BU208,BU208,11,2.48,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BU
+BU326.jpg,6,6BU326A6,BU326,11,4.34,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BU
+BD241-Pinout.jpg,7,7BD241,BD241,11,0.64,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BD
+EL84.jpg,8,8EL84A8,EL84,11,0.00,ΗΛΕΚΤΡΟΝΙΚΑ > ΛΥΧΝΙΕΣ
