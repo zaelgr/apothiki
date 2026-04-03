@@ -1,6 +1,7 @@
-﻿Image,ID,SKU,Name,Qty,Price,Category
+Image,ID,SKU,Name,Qty,Price,Category
 BU208.jpg,1,1BU208A1,BU208,11,3.10,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BU
 BD241-Pinout.jpg,2,2BD241A2,BD241,11,1.86,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BD
 BD242-Pinout.jpg,3,3BD242A3,BD242,11,2.36,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BD
 BU326.jpg,4,4BU326A4,BU326,11,3.60,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BU
 Unijunction_transistors.jpg,5,5BC546A4,BC546,11,1.08,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BC
+ecc83s-12.jpg,6,6ECC83A6,ECC83,11,18.60,Γενικά
