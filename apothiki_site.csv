@@ -1,10 +1,2 @@
 Image,ID,SKU,Name,Qty,Price,Category
-Unijunction_transistors.jpg,1,1BC546A1,BC546,11,3.10,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BC
-ecc83s-12.jpg,2,2ECC83A2,ECC83,11,24.80,ΗΛΕΚΤΡΟΝΙΚΑ > ΛΥΧΝΙΕΣ
-PL504.jpg,3,3PL504A3,PL504,11,24.18,ΗΛΕΚΤΡΟΝΙΚΑ > ΛΥΧΝΙΕΣ
-BD141.jpg,4,4BD141A4,BD141,11,4.34,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BD
-BU208.jpg,5,5BU208,BU208,11,2.48,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BU
-BU326.jpg,6,6BU326A6,BU326,11,4.34,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BU
-BD241-Pinout.jpg,7,7BD241,BD241,11,0.64,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BD
-EL84.jpg,8,8EL84A8,EL84,11,0.00,ΗΛΕΚΤΡΟΝΙΚΑ > ΛΥΧΝΙΕΣ
-BD242-Pinout.jpg,13,13BD242A8,BD242,11,0.68,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BD
+BU208.jpg,1,1BU208,BU208,11,3.10,ΗΛΕΚΤΡΟΝΙΚΑ > TRANSISTOR > BU
