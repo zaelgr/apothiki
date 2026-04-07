@@ -103,98 +103,43 @@
 <script>
     let rawData = [];
 
-    // ΑΥΤΟΜΑΤΗ ΦΟΡΤΩΣΗ ΜΕ ΤΟ ΠΟΥ ΑΝΟΙΓΕΙ Η ΣΕΛΙΔΑ
+    // ΑΥΤΟΜΑΤΗ ΦΟΡΤΩΣΗ JSON ΑΠΟ ΤΟ GITHUB
     window.onload = function() {
-        fetch('apothiki_site.csv')
+        // Εδώ καλούμε το stock.json αντί για το csv
+        fetch('stock.json')
             .then(response => {
-                if (!response.ok) throw new Error("Το αρχείο CSV δεν βρέθηκε στον server.");
-                return response.text();
+                if (!response.ok) throw new Error("Το αρχείο stock.json δεν βρέθηκε.");
+                return response.json();
             })
-            .then(text => {
-                processData(text);
+            .then(data => {
+                rawData = data;
                 document.getElementById('status').innerText = "🟢 LIVE: " + rawData.length + " ΥΛΙΚΑ";
                 document.getElementById('status').style.color = "#27ae60";
+                renderTable(rawData);
+                // Αν έχεις κατηγορίες στο JSON, ενεργοποίησε το buildTree()
+                // buildTree(); 
             })
             .catch(error => {
                 document.getElementById('status').innerText = "🔴 ΣΦΑΛΜΑ: " + error.message;
                 document.getElementById('status').style.color = "#e74c3c";
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Σφάλμα! Βεβαιωθείτε ότι το 'apothiki_site.csv' βρίσκεται στον ίδιο φάκελο με το index.html.</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Σφάλμα! Βεβαιωθείτε ότι το 'stock.json' έχει ανέβει στο GitHub.</td></tr>`;
             });
     };
-
-    function processData(text) {
-        const lines = text.split('\n');
-        rawData = lines.slice(1).map(line => {
-            const c = line.split(',');
-            if (c.length < 6) return null;
-            return {
-                img:      c[0]?.trim() || "",
-                id:       c[1]?.trim() || "",
-                sku:      c[2]?.trim() || "---",
-                name:     c[3]?.trim() || "Unknown",
-                qty:      c[4]?.trim() || "0",
-                price:    c[5]?.trim() || "0.00",
-                category: c[6]?.trim() || "Γενικά"
-            };
-        }).filter(r => r && r.name);
-        
-        buildTree();
-        renderTable(rawData);
-    }
 
     function renderTable(data) {
         const body = document.getElementById('tableBody');
         body.innerHTML = data.map(r => {
-            const imgSrc = r.img && r.img !== "no-image.png" ? `images/${r.img}` : `https://via.placeholder.com/50?text=No+Img`;
+            // Προσαρμογή στα ονόματα των πεδίων του C# JSON (ProductName, FinalPrice κλπ)
+            const imgSrc = r.ImagePath ? r.ImagePath : `https://via.placeholder.com/50?text=No+Img`;
             return `<tr>
                 <td><img src="${imgSrc}" class="prod-img" onclick="openLightbox('${imgSrc}')" onerror="this.src='https://via.placeholder.com/50?text=No+Img'"></td>
-                <td class="id-text">${r.id}</td>
-                <td class="sku-text">${r.sku}</td>
-                <td><strong>${r.name}</strong></td>
-                <td style="text-align:center; font-weight:bold;">${r.qty}</td>
-                <td class="price-text">${r.price} €</td>
+                <td class="id-text">${r.Id}</td>
+                <td class="sku-text">${r.SKU}</td>
+                <td><strong>${r.ProductName}</strong><br><small>${r.Description || ''}</small></td>
+                <td style="text-align:center; font-weight:bold;">${r.Quantity}</td>
+                <td class="price-text">${r.FinalPrice.toFixed(2)} €</td>
             </tr>`;
         }).join('');
-    }
-
-    function buildTree() {
-        const container = document.getElementById('treeContainer');
-        const tree = {};
-        rawData.forEach(item => {
-            const parts = item.category.split(' > ');
-            let current = tree;
-            parts.forEach(part => {
-                if (!current[part]) current[part] = { _sub: {} };
-                current = current[part]._sub;
-            });
-        });
-        container.innerHTML = "";
-        renderNodes(tree, container, "");
-    }
-
-    function renderNodes(node, parentElement, fullPath) {
-        Object.keys(node).sort().forEach(key => {
-            const path = fullPath ? `${fullPath} > ${key}` : key;
-            const div = document.createElement('div');
-            div.className = 'tree-node';
-            const header = document.createElement('div');
-            header.className = 'tree-header';
-            header.innerHTML = `▶ 📂 ${key}`;
-            const childrenDiv = document.createElement('div');
-            childrenDiv.className = 'children';
-            header.onclick = (e) => {
-                e.stopPropagation();
-                const isOpen = childrenDiv.classList.toggle('open');
-                header.innerHTML = (isOpen ? "▼" : "▶") + " 📂 " + key;
-                filterByCategory(path);
-                document.querySelectorAll('.tree-header').forEach(h => h.classList.remove('active'));
-                header.classList.add('active');
-            };
-            div.appendChild(header);
-            div.appendChild(childrenDiv);
-            parentElement.appendChild(div);
-            renderNodes(node[key]._sub, childrenDiv, path);
-        });
     }
 
     function openLightbox(src) {
@@ -204,25 +149,16 @@
         modalImg.src = src;
     }
 
-    function filterByCategory(path) {
-        const filtered = rawData.filter(item => item.category.startsWith(path));
-        renderTable(filtered);
-    }
-
-    function showAll() { 
-        renderTable(rawData); 
-        document.querySelectorAll('.tree-header').forEach(h => h.classList.remove('active')); 
-    }
-
     function search() {
         const term = document.getElementById('searchBox').value.toLowerCase();
         const filtered = rawData.filter(r => 
-            r.name.toLowerCase().includes(term) || 
-            r.id.toLowerCase().includes(term) || 
-            r.sku.toLowerCase().includes(term)
+            r.ProductName.toLowerCase().includes(term) || 
+            r.Id.toString().includes(term) || 
+            r.SKU.toLowerCase().includes(term)
         );
         renderTable(filtered);
     }
 </script>
 </body>
 </html>
+
