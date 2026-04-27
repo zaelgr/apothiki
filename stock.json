@@ -12,7 +12,7 @@
     "Quantity": 11,
     "MinStatus": 10,
     "Unit": "\u03A4\u03B5\u03BC\u03AC\u03C7\u03B9\u03B1",
-    "ImagePath": "images\\Unijunction_transistors.jpg",
+    "ImagePath": "images\\BC546.jpg",
     "IsImagePathSet": true,
     "ManualPath": "manuals\\BC546.PDF",
     "IsManualPathSet": true,
